@@ -11,8 +11,8 @@ class Trains extends StatefulWidget {
 
 class _TrainsState extends State<Trains> {
   final _formKey = GlobalKey<FormState>();
-  final startController = TextEditingController();
-  final endController = TextEditingController();
+  final startTrainController = TextEditingController();
+  final endTrainController = TextEditingController();
   String _selectedWeekday = "Monday";
 
   List<String> _weekdays = [
@@ -52,7 +52,7 @@ class _TrainsState extends State<Trains> {
                 style: TextStyle(
                   color: Colors.black, // Set the text color here
                 ),
-                controller: startController,
+                controller: startTrainController,
                 validator: (value) {
                   if (value!.isEmpty) {
                     return 'Please enter starting point';
@@ -76,7 +76,7 @@ class _TrainsState extends State<Trains> {
                 style: TextStyle(
                   color: Colors.black, // Set the text color here
                 ),
-                controller: endController,
+                controller: endTrainController,
                 validator: (value) {
                   if (value!.isEmpty) {
                     return 'Please enter ending point';

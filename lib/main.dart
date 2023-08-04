@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tourist_app/screens/api.dart';
 import 'package:tourist_app/screens/home.dart';
 import 'package:tourist_app/screens/signin.dart';
 import 'package:tourist_app/screens/signup.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
         "/signup": (context)=> SignupScreen(),
         "/home": (context)=> HomeScreen(),
         "/signin": (context)=> SigninScreen(),
+        "/api": (context)=> Api(),
       },
     );
   }

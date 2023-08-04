@@ -1,5 +1,53 @@
+import 'dart:convert';
+
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:tourist_app/screens/signup.dart';
+
+// String token2 = "";
+
+Future<Album> createAlbum(String email, String password) async {
+  final response = await http.post(
+    Uri.parse(
+        'https://energetic-lion-petticoat.cyclic.app/api/v1/auth/register'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(
+        <String, String>{'email': email, 'password': password}),
+  );
+  if (response.statusCode == 201) {
+    Map<String, dynamic> data = jsonDecode(response.body);
+    token = data['token'];
+    print(token);
+    // if(!token.isEmpty){
+    //   Get.to(HomeScreen());
+    // }
+    // Navigator.pushNamed(context, '/home');
+    return Album.fromJson(jsonDecode(response.body));
+  } else {
+    // If the server did not return a 201 CREATED response,
+    // then throw an exception.
+    throw Exception(
+        'Failed to create album. \nStatus code: ${response.statusCode}\nError message: ${response.body}');
+  }
+}
+
+class Album {
+  // final int id;
+  final String email;
+  final String password;
+
+  Album({required this.email, required this.password});
+
+  factory Album.fromJson(Map<String, dynamic> json) {
+    return Album(
+        // id: json['id'],
+        email: json['email'],
+        password: json['password']);
+  }
+}
 
 class SigninScreen extends StatefulWidget {
   @override
@@ -95,23 +143,43 @@ class _SigninScreenState extends State<SigninScreen> {
                       },
                     ),
                     // SizedBox(height: 8),
-                    Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          child: Text(
-                            "Forgot Password?",
-                            style: TextStyle(color: Colors.blue),
-                          ),
-                          onPressed: () {
-                            
-                          },
-                        )),
-                    SizedBox(height: 8),
+                    // Align(
+                    //     alignment: Alignment.centerRight,
+                    //     child: TextButton(
+                    //       child: Text(
+                    //         "Forgot Password?",
+                    //         style: TextStyle(color: Colors.blue),
+                    //       ),
+                    //       onPressed: () {},
+                    //     )),
+                    SizedBox(height: 16),
                     Container(
                       height: 40,
                       width: MediaQuery.of(context).size.width * .4,
                       child: ElevatedButton(
-                        onPressed: _isLoading ? null : submit,
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            setState(() {
+                              createAlbum(_emailController.text.toString(),
+                                  _passwordController.text.toString());
+                            });
+                            print("token ---{$token}");
+                            if (!token.isEmpty) {
+                              Navigator.pushNamed(context, '/home');
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('LogIn Successful'),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('InValid Credentials'),
+                              ),
+                            );
+                            }
+                          }
+                        },
                         child: _isLoading
                             ? CircularProgressIndicator()
                             : Text(
@@ -124,7 +192,10 @@ class _SigninScreenState extends State<SigninScreen> {
                     TextButton(
                       child: Text(
                         'Create New Account',
-                        style: TextStyle(fontSize: 15, color: Colors.blue,decoration: TextDecoration.underline),
+                        style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline),
                       ),
                       onPressed: () {
                         Navigator.pushNamed(context, "/signup");
